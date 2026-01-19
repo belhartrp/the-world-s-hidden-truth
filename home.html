@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sequence</title>
+
+<style>
+  body{
+    margin:0;
+    min-height:100svh;
+    display:grid;
+    place-items:center;
+    background:#fff;
+    color:#000;
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    overflow:hidden;
+  }
+
+  body.dark{ background:#000; }
+  body.fadeToWhite{
+    transition: background-color 6s linear;
+    background:#fff;
+  }
+
+  .box{
+    width:min(920px,92vw);
+    text-align:center;
+    padding:24px;
+  }
+
+  /* NARASI */
+  #text{
+    font-size: clamp(24px, 4.5vw, 48px);
+    font-weight: 600;
+    line-height: 1.25;
+    white-space: pre-wrap;
+  }
+
+  .hidden{ display:none; }
+
+  .cursor::after{
+    content:"▍";
+    margin-left:6px;
+    animation: blink .9s steps(1) infinite;
+  }
+  @keyframes blink{50%{opacity:0}}
+
+  /* COUNTDOWN */
+  .countdown-layer{
+    position: fixed;
+    inset: 0;
+    display: none;
+    place-items: center;
+    z-index: 999;
+  }
+  .countdown-layer.show{ display:grid; }
+
+  .count{
+    display:none;
+    font-weight:900;
+    line-height:1;
+    text-shadow:0 0 60px rgba(0,0,0,.6);
+    animation: pop 1s ease-out;
+  }
+
+  #count3,
+  #count2,
+  #count1{
+    font-size: 55vmin;
+  }
+
+  .count.show{ display:block; }
+
+  @keyframes pop{
+    0%{transform:scale(.4);opacity:0}
+    100%{transform:scale(1);opacity:1}
+  }
+
+  /* ===== FINAL WORDS (DIPPOS HYTAM) ===== */
+  .reveal{
+    opacity:0;
+    transition:opacity 4s ease;
+    text-align:center;
+    font-weight:900;
+    line-height:0.95;
+
+    /* 🔥 UKURAN SUPER BESAR */
+    font-size: clamp(80px, 18vw, 220px);
+    letter-spacing: 6px;
+  }
+
+  .reveal.show{ opacity:1; }
+</style>
+</head>
+
+<body>
+  <div class="box">
+    <div id="text" class="cursor"></div>
+
+    <div id="finalWords" class="reveal">
+      <div>DIPPOS</div>
+      <div>HYTAM</div>
+    </div>
+  </div>
+
+  <!-- COUNTDOWN -->
+  <div class="countdown-layer" id="countLayer">
+    <div class="count" id="count3">3</div>
+    <div class="count" id="count2">2</div>
+    <div class="count" id="count1">1</div>
+  </div>
+
+<script>
+  const textEl = document.getElementById("text");
+  const finalWords = document.getElementById("finalWords");
+  const layer = document.getElementById("countLayer");
+
+  const counts = [
+    document.getElementById("count3"),
+    document.getElementById("count2"),
+    document.getElementById("count1")
+  ];
+
+  const lines = [
+    "Bagaimana jika sebagian sejarah yang kita kenal sebenarnya sengaja disembunyikan..?",
+    "dan bukti-buktinya ada di sekitar kita, tapi jarang sekali benar-benar diperhatikan..",
+    "Jika kamu siap melihat dari sudut pandang yang berbeda..",
+    "tarik napas..",
+    "fokus..",
+    "dan bersiaplah"
+  ];
+
+  const sleep = ms => new Promise(r=>setTimeout(r,ms));
+
+  async function typeLine(t){
+    textEl.className="cursor";
+    textEl.textContent="";
+    for(const c of t){
+      textEl.textContent+=c;
+      await sleep(50);
+    }
+    await sleep(1200);
+  }
+
+  async function countdown(){
+    textEl.classList.add("hidden");
+
+    layer.classList.add("show");
+    for(const c of counts){
+      c.classList.add("show");
+      await sleep(1000);
+      c.classList.remove("show");
+    }
+    layer.classList.remove("show");
+  }
+
+  async function run(){
+    for(const l of lines) await typeLine(l);
+
+    await countdown();
+
+    document.body.classList.add("dark");
+    void document.body.offsetHeight;
+    document.body.classList.add("fadeToWhite");
+
+    finalWords.classList.add("show");
+  }
+
+  run();
+</script>
+</body>
+</html>
